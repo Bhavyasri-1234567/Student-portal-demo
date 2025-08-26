@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CareConnect — Doctor Consultation</title>
+  <meta name="description" content="Book appointments, chat, and have video consultations with doctors.">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020;--card:#121a33;--soft:#192345;--muted:#8ea2d6;--brand:#4f8cff;--brand-2:#7bd5ff;--ok:#1fd67c;--warn:#ffb800;--danger:#ff5a7a;--text:#e8eeff;--text-dim:#b6c3ee;--ring:0 0 0 3px rgb(79 140 255 / .35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";background:linear-gradient(180deg,#0b1020 0%,#0b1126 35%,#0d1430 100%);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+    header{position:sticky;top:0;z-index:50;background:rgba(11,16,32,.6);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:.2px}
+    .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-2) 100%);box-shadow:0 8px 30px rgba(79,140,255,.35)}
+    nav ul{list-style:none;display:flex;gap:18px;padding:0;margin:0}
+    nav a{padding:8px 10px;border-radius:10px;color:var(--text-dim)}
+    nav a:hover,nav a:focus{outline:none;background:rgba(255,255,255,.06);color:var(--text)}
+    .btn{display:inline-flex;gap:10px;align-items:center;justify-content:center;padding:12px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg,#1a2446 0%,#141d3b 100%);color:var(--text);font-weight:600;cursor:pointer;transition:transform .05s ease;border-top:1px solid rgba(255,255,255,.18)}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#06112b;border-color:transparent}
+    .btn.ghost{background:transparent}
+
+    .hero{padding:64px 0 36px}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+    .h1{font-size:48px;line-height:1.05;margin:0 0 14px}
+    .muted{color:var(--text-dim)}
+    .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(79,140,255,.15);color:#beddff;border:1px solid rgba(79,140,255,.35);padding:8px 12px;border-radius:999px;font-weight:600}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08);border-radius:18px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+    .stat{padding:16px}
+
+    .search{margin-top:18px;padding:16px}
+    .row{display:grid;grid-template-columns:2fr 1.2fr 1.2fr .9fr .9fr;gap:10px}
+    .input,.select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0f1630;color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+    .input:focus,.select:focus{outline:none;box-shadow:var(--ring)}
+
+    .section{padding:36px 0}
+    .subtle{font-size:14px;color:var(--text-dim)}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .doctor{display:flex;gap:14px;padding:14px}
+    .avatar{flex:0 0 56px;height:56px;border-radius:14px;background:radial-gradient(60% 60% at 30% 20%,#fff 0%,#a5c7ff 35%,#4f8cff 100%);box-shadow:0 10px 30px rgba(79,140,255,.25)}
+
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);font-size:12px}
+    .doctor .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+
+    .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+
+    .footer{padding:40px 0;color:var(--text-dim);border-top:1px solid rgba(255,255,255,.06)}
+
+    /* Modal */
+    dialog{border:none;border-radius:16px;padding:0;background:#0d1533;color:var(--text);box-shadow:0 30px 70px rgba(0,0,0,.6)}
+    .modal{padding:18px}
+    .modal header{position:static;background:transparent;border:none;padding:0 0 12px}
+    .modal .row{grid-template-columns:1fr 1fr}
+    dialog::backdrop{background:rgba(4,8,20,.75)}
+
+    /* Toast */
+    .toast{position:fixed;right:18px;bottom:18px;display:flex;gap:10px;align-items:center;background:#0e1736;border:1px solid rgba(255,255,255,.08);padding:12px 14px;border-radius:14px;box-shadow:0 15px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(10px);transition:.25s ease}
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr 1fr}
+      .row{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 640px){
+      .grid{grid-template-columns:1fr}
+      .row{grid-template-columns:1fr}
+      .h1{font-size:36px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Primary">
+      <div class="brand" aria-label="CareConnect home">
+        <div class="logo" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3v18M3 12h18" stroke="#071229" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        CareConnect
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#doctors">Find Doctors</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+      <div>
+        <button class="btn ghost" id="loginBtn" aria-haspopup="dialog">Log in</button>
+        <button class="btn primary" id="bookTop">Book Now</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="badge" aria-label="instant video consult badge">⚡ Instant video consults</span>
+          <h1 class="h1">Talk to a doctor in minutes—anytime, anywhere.</h1>
+          <p class="muted">Search specialists, compare profiles, and book secure video appointments. Prescriptions and reports—one place.</p>
+          <div class="cta">
+            <a class="btn primary" href="#doctors">Find a Doctor</a>
+            <button class="btn" id="demoCall">Start Video Call (Demo)</button>
+          </div>
+          <div class="stats">
+            <div class="card stat"><strong>1.2M+</strong><div class="subtle">Patients served</div></div>
+            <div class="card stat"><strong>2,400+</strong><div class="subtle">Verified doctors</div></div>
+            <div class="card stat"><strong>4.9★</strong><div class="subtle">Average rating</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card search" role="search" aria-label="doctor search">
+            <div class="row">
+              <input class="input" id="q" placeholder="Search by name or symptom (e.g., fever, migraine)" aria-label="Search" />
+              <select class="select" id="specialty" aria-label="Specialty">
+                <option value="">All specialties</option>
+                <option>General Physician</option>
+                <option>Dermatologist</option>
+                <option>Cardiologist</option>
+                <option>Psychiatrist</option>
+                <option>Pediatrician</option>
+                <option>Gynecologist</option>
+                <option>Orthopedic</option>
+                <option>ENT</option>
+              </select>
+              <select class="select" id="city" aria-label="City">
+                <option value="">Any city</option>
+                <option>Delhi</option>
+                <option>Mumbai</option>
+                <option>Bengaluru</option>
+                <option>Hyderabad</option>
+                <option>Chennai</option>
+                <option>Pune</option>
+              </select>
+              <select class="select" id="day" aria-label="Availability">
+                <option value="">Any day</option>
+                <option>Today</option>
+                <option>Tomorrow</option>
+                <option>Weekend</option>
+              </select>
+              <button class="btn" id="searchBtn">Search</button>
+            </div>
+            <p class="subtle" style="margin-top:10px">Tip: press <kbd>Enter</kbd> to search</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section">
+      <div class="grid">
+        <article class="card" style="padding:18px">
+          <h3>Verified Doctors</h3>
+          <p class="muted">Every profile is KYC verified with licence numbers and experience.</p>
+          <span class="pill">🔒 Secure</span>
+        </article>
+        <article class="card" style="padding:18px">
+          <h3>Secure Video & Chat</h3>
+          <p class="muted">HIPAA-style encryption with consent logs for each call.</p>
+          <span class="pill">🛡️ Encrypted</span>
+        </article>
+        <article class="card" style="padding:18px">
+          <h3>Digital Prescriptions</h3>
+          <p class="muted">Instant e‑prescriptions and lab orders saved to your records.</p>
+          <span class="pill">📄 eRx</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Doctors -->
+    <section id="doctors" class="section">
+      <div style="display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px">
+        <div>
+          <h2 style="margin:0 0 4px">Available Doctors</h2>
+          <p class="subtle" id="resultCount">Loading…</p>
+        </div>
+        <div>
+          <label for="sort" class="subtle" style="display:block;margin-bottom:6px">Sort by</label>
+          <select class="select" id="sort">
+            <option value="rating">Rating</option>
+            <option value="price">Price</option>
+            <option value="experience">Experience</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" id="doctorGrid" aria-live="polite"></div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+      <h2>Frequently Asked Questions</h2>
+      <details class="card" style="padding:14px;margin-top:10px">
+        <summary><strong>How do online consultations work?</strong></summary>
+        <p class="muted">Pick a doctor, choose a slot, pay securely and join the video room. After the call, receive your prescription and summary in your account.</p>
+      </details>
+      <details class="card" style="padding:14px;margin-top:10px">
+        <summary><strong>Can I reschedule or cancel?</strong></summary>
+        <p class="muted">Yes, up to 2 hours before the slot. Refunds are processed instantly to your original payment method.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container" style="display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between">
+      <div class="brand"><div class="logo" aria-hidden="true"></div>CareConnect</div>
+      <div class="subtle">© <span id="year"></span> CareConnect Health Pvt Ltd</div>
+      <div class="subtle">support@careconnect.example</div>
+    </div>
+  </footer>
+
+  <!-- Booking Modal -->
+  <dialog id="bookModal" aria-labelledby="bookTitle">
+    <form method="dialog" class="modal">
+      <header>
+        <h3 id="bookTitle" style="margin:0 0 2px">Book Appointment</h3>
+        <p class="subtle" id="bookSubtitle">Select a date and time</p>
+      </header>
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label for="patientName" class="subtle">Your name</label>
+          <input id="patientName" class="input" placeholder="Full name" required />
+        </div>
+        <div>
+          <label for="patientPhone" class="subtle">Phone</label>
+          <input id="patientPhone" class="input" placeholder="10-digit mobile" pattern="[0-9]{10}" required />
+        </div>
+        <div>
+          <label for="date" class="subtle">Date</label>
+          <input id="date" type="date" class="input" required />
+        </div>
+        <div>
+          <label for="time" class="subtle">Time</label>
+          <select id="time" class="select" required></select>
+        </div>
+        <div>
+          <label for="mode" class="subtle">Mode</label>
+          <select id="mode" class="select">
+            <option>Video</option>
+            <option>Audio</option>
+            <option>Chat</option>
+          </select>
+        </div>
+        <div>
+          <label for="reason" class="subtle">Reason</label>
+          <input id="reason" class="input" placeholder="e.g., recurring headache" required />
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+        <button class="btn ghost" value="cancel">Cancel</button>
+        <button class="btn primary" id="confirmBooking" value="default">Confirm & Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Login Modal (Demo) -->
+  <dialog id="loginModal" aria-labelledby="loginTitle">
+    <form method="dialog" class="modal">
+      <h3 id="loginTitle" style="margin:0 0 10px">Welcome back</h3>
+      <div class="row">
+        <div>
+          <label class="subtle" for="email">Email</label>
+          <input id="email" type="email" class="input" placeholder="you@example.com" required>
+        </div>
+        <div>
+          <label class="subtle" for="password">Password</label>
+          <input id="password" type="password" class="input" placeholder="••••••••" required>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+        <button class="btn ghost" value="cancel">Close</button>
+        <button class="btn primary" value="default">Log in</button>
+      </div>
+      <p class="subtle" style="margin-top:10px">Demo only — no real authentication.</p>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // ---------------- Mock Data -----------------
+    const DOCTORS = [
+      {id:1,name:"Dr. Aisha Khan",spec:"General Physician",city:"Delhi",price:399,rating:4.9,exp:12,tags:["Fever","Cough","Diabetes"], slots:["09:00","09:30","10:00","11:30","16:30" ]},
+      {id:2,name:"Dr. Rohan Mehta",spec:"Dermatologist",city:"Mumbai",price:599,rating:4.8,exp:9,tags:["Acne","Rash","Hairfall"], slots:["10:30","11:00","14:30","18:00"]},
+      {id:3,name:"Dr. Sara Thomas",spec:"Psychiatrist",city:"Bengaluru",price:799,rating:4.7,exp:10,tags:["Anxiety","Depression","Sleep"], slots:["09:30","12:00","17:00"]},
+      {id:4,name:"Dr. Arjun Iyer",spec:"Cardiologist",city:"Chennai",price:999,rating:4.9,exp:15,tags:["Chest pain","BP","Cholesterol"], slots:["10:00","10:30","15:30","19:00"]},
+      {id:5,name:"Dr. Nidhi Patel",spec:"Pediatrician",city:"Pune",price:499,rating:4.6,exp:8,tags:["Cold","Vaccine","Allergy"], slots:["09:00","13:00","16:00"]},
+      {id:6,name:"Dr. Kabir Singh",spec:"Orthopedic",city:"Hyderabad",price:699,rating:4.5,exp:11,tags:["Back pain","Knee","Fracture"], slots:["10:15","11:45","17:30"]},
+      {id:7,name:"Dr. Priya Nair",spec:"Gynecologist",city:"Bengaluru",price:749,rating:4.8,exp:13,tags:["PCOS","Pregnancy","Periods"], slots:["09:45","12:15","18:45"]},
+      {id:8,name:"Dr. Vivek Rao",spec:"ENT",city:"Delhi",price:449,rating:4.6,exp:7,tags:["Ear","Throat","Sinus"], slots:["09:30","15:00","17:30"]}
+    ];
+
+    // ---------------- Utilities -----------------
+    const $ = (sel,root=document) => root.querySelector(sel);
+    const $$ = (sel,root=document) => [...root.querySelectorAll(sel)];
+    const fmt = new Intl.NumberFormat('en-IN');
+
+    function toast(msg, type='info'){
+      const t = $('#toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 2400);
+    }
+
+    // ---------------- Rendering -----------------
+    const grid = $('#doctorGrid');
+    const resultCount = $('#resultCount');
+
+    function doctorCard(d){
+      const el = document.createElement('article');
+      el.className = 'card doctor';
+      el.innerHTML = `
+        <div class="avatar" aria-hidden="true"></div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:start">
+            <div>
+              <strong>${d.name}</strong>
+              <div class="subtle">${d.spec} • ${d.exp} yrs exp • ${d.city}</div>
+            </div>
+            <div class="pill" title="Rating">⭐ ${d.rating.toFixed(1)}</div>
+          </div>
+          <div class="meta">${d.tags.map(t=>`<span class="pill">${t}</span>`).join('')}</div>
+          <div class="cta">
+            <button class="btn" data-id="${d.id}" aria-label="View slots for ${d.name}">₹${fmt.format(d.price)} • View Slots</button>
+            <button class="btn ghost" disabled title="Demo only">Start Video</button>
+          </div>
+        </div>
+      `;
+      el.querySelector('.btn').addEventListener('click',()=>openBooking(d));
+      return el;
+    }
+
+    function render(list){
+      grid.innerHTML = '';
+      list.forEach(d => grid.appendChild(doctorCard(d)));
+      resultCount.textContent = `${list.length} doctor${list.length!==1?'s':''} found`;
+    }
+
+    // initial render
+    render(DOCTORS);
+
+    // ---------------- Search & Sort -----------------
+    $('#searchBtn').addEventListener('click', runSearch);
+    ['q','specialty','city','day'].forEach(id => $('#'+id).addEventListener('keydown', e=>{ if(e.key==='Enter') runSearch(); }));
+    $('#sort').addEventListener('change', runSearch);
+
+    function runSearch(){
+      const q = $('#q').value.toLowerCase().trim();
+      const spec = $('#specialty').value;
+      const city = $('#city').value;
+      const sort = $('#sort').value;
+
+      let list = DOCTORS.filter(d =>
+        (!spec || d.spec===spec) && (!city || d.city===city) && (!q || d.name.toLowerCase().includes(q) || d.tags.some(t=>t.toLowerCase().includes(q)))
+      );
+
+      list.sort((a,b)=>{
+        if(sort==='price') return a.price - b.price;
+        if(sort==='experience') return b.exp - a.exp;
+        if(sort==='name') return a.name.localeCompare(b.name);
+        return b.rating - a.rating;
+      });
+
+      render(list);
+    }
+
+    // ---------------- Booking -----------------
+    const bookModal = $('#bookModal');
+    const timeSel = $('#time');
+    let currentDoc = null;
+
+    function openBooking(doc){
+      currentDoc = doc;
+      $('#bookTitle').textContent = `Book with ${doc.name}`;
+      $('#bookSubtitle').textContent = `${doc.spec} • ${doc.city}`;
+      timeSel.innerHTML = doc.slots.map(s=>`<option>${s}</option>`).join('');
+
+      // date min = today
+      const today = new Date();
+      const iso = today.toISOString().slice(0,10);
+      $('#date').min = iso;
+      $('#date').value = iso;
+
+      bookModal.showModal();
+    }
+
+    $('#confirmBooking').addEventListener('click', (e)=>{
+      const name = $('#patientName').value.trim();
+      const phone = $('#patientPhone').value.trim();
+      const date = $('#date').value;
+      const time = $('#time').value;
+      const reason = $('#reason').value.trim();
+
+      if(!name || !phone || !date || !time || !reason){
+        e.preventDefault();
+        toast('Please fill all details');
+        return;
+      }
+
+      // Save to localStorage
+      const appt = {doctorId: currentDoc.id, doctor: currentDoc.name, spec: currentDoc.spec, date, time, name, phone, reason, mode: $('#mode').value, createdAt: new Date().toISOString()};
+      const arr = JSON.parse(localStorage.getItem('appointments')||'[]');
+      arr.push(appt);
+      localStorage.setItem('appointments', JSON.stringify(arr));
+      toast('Appointment booked ✔');
+    });
+
+    // Top buttons
+    $('#bookTop').addEventListener('click', ()=> openBooking(DOCTORS[0]));
+    $('#demoCall').addEventListener('click', ()=> toast('Demo: video call coming soon'));
+
+    // Login (demo)
+    const loginModal = $('#loginModal');
+    $('#loginBtn').addEventListener('click', ()=> loginModal.showModal());
+
+    // Year
+    $('#year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
